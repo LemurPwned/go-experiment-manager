@@ -1,0 +1,22 @@
+syntax = "proto3";
+package msg;
+
+import "google/protobuf/timestamp.proto";
+
+
+service MetricSerice {
+    rpc SendMetrics(Metric) returns (MetricsReply) {}
+}
+
+
+message Metric {
+    string experimentID = 1;
+    string metricBody = 2;
+    int64 createdAt = 3;
+
+}
+
+message MetricsReply {
+    int32 statusCode = 1;
+    string message = 2;
+}

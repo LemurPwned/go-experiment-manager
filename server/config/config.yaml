@@ -1,0 +1,10 @@
+
+server:
+    port: 4000 
+    snapshotInterval: 180 # that's seconds 
+    saveDirectory: "./snapshots"
+
+
+mongodb:
+    host: localhost
+    port: 27017
