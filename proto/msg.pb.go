@@ -148,6 +148,188 @@ func (x *MetricsReply) GetMessage() string {
 	return ""
 }
 
+type AssetUpload struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Data:
+	//	*AssetUpload_Info
+	//	*AssetUpload_Content
+	Data isAssetUpload_Data `protobuf_oneof:"data"`
+}
+
+func (x *AssetUpload) Reset() {
+	*x = AssetUpload{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_msg_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AssetUpload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetUpload) ProtoMessage() {}
+
+func (x *AssetUpload) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_msg_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetUpload.ProtoReflect.Descriptor instead.
+func (*AssetUpload) Descriptor() ([]byte, []int) {
+	return file_proto_msg_proto_rawDescGZIP(), []int{2}
+}
+
+func (m *AssetUpload) GetData() isAssetUpload_Data {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+func (x *AssetUpload) GetInfo() *AssetInfo {
+	if x, ok := x.GetData().(*AssetUpload_Info); ok {
+		return x.Info
+	}
+	return nil
+}
+
+func (x *AssetUpload) GetContent() []byte {
+	if x, ok := x.GetData().(*AssetUpload_Content); ok {
+		return x.Content
+	}
+	return nil
+}
+
+type isAssetUpload_Data interface {
+	isAssetUpload_Data()
+}
+
+type AssetUpload_Info struct {
+	Info *AssetInfo `protobuf:"bytes,1,opt,name=info,proto3,oneof"`
+}
+
+type AssetUpload_Content struct {
+	Content []byte `protobuf:"bytes,2,opt,name=content,proto3,oneof"`
+}
+
+func (*AssetUpload_Info) isAssetUpload_Data() {}
+
+func (*AssetUpload_Content) isAssetUpload_Data() {}
+
+type AssetInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	AssetName string `protobuf:"bytes,1,opt,name=AssetName,proto3" json:"AssetName,omitempty"`
+	AssetType string `protobuf:"bytes,2,opt,name=AssetType,proto3" json:"AssetType,omitempty"`
+}
+
+func (x *AssetInfo) Reset() {
+	*x = AssetInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_msg_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AssetInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetInfo) ProtoMessage() {}
+
+func (x *AssetInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_msg_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetInfo.ProtoReflect.Descriptor instead.
+func (*AssetInfo) Descriptor() ([]byte, []int) {
+	return file_proto_msg_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AssetInfo) GetAssetName() string {
+	if x != nil {
+		return x.AssetName
+	}
+	return ""
+}
+
+func (x *AssetInfo) GetAssetType() string {
+	if x != nil {
+		return x.AssetType
+	}
+	return ""
+}
+
+type AssetUploadReply struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+}
+
+func (x *AssetUploadReply) Reset() {
+	*x = AssetUploadReply{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_msg_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AssetUploadReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetUploadReply) ProtoMessage() {}
+
+func (x *AssetUploadReply) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_msg_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetUploadReply.ProtoReflect.Descriptor instead.
+func (*AssetUploadReply) Descriptor() ([]byte, []int) {
+	return file_proto_msg_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AssetUploadReply) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_proto_msg_proto protoreflect.FileDescriptor
 
 var file_proto_msg_proto_rawDesc = []byte{
@@ -165,12 +347,29 @@ var file_proto_msg_proto_rawDesc = []byte{
 	0x70, 0x6c, 0x79, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64,
 	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0a, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43,
 	0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x32, 0x3f, 0x0a,
-	0x0c, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x53, 0x65, 0x72, 0x69, 0x63, 0x65, 0x12, 0x2f, 0x0a,
-	0x0b, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x12, 0x0b, 0x2e, 0x6d,
-	0x73, 0x67, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x1a, 0x11, 0x2e, 0x6d, 0x73, 0x67, 0x2e,
-	0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x57, 0x0a,
+	0x0b, 0x41, 0x73, 0x73, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x12, 0x24, 0x0a, 0x04,
+	0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x6d, 0x73, 0x67,
+	0x2e, 0x41, 0x73, 0x73, 0x65, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x48, 0x00, 0x52, 0x04, 0x69, 0x6e,
+	0x66, 0x6f, 0x12, 0x1a, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0c, 0x48, 0x00, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x42, 0x06,
+	0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x47, 0x0a, 0x09, 0x41, 0x73, 0x73, 0x65, 0x74, 0x49,
+	0x6e, 0x66, 0x6f, 0x12, 0x1c, 0x0a, 0x09, 0x41, 0x73, 0x73, 0x65, 0x74, 0x4e, 0x61, 0x6d, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x41, 0x73, 0x73, 0x65, 0x74, 0x4e, 0x61, 0x6d,
+	0x65, 0x12, 0x1c, 0x0a, 0x09, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x22,
+	0x2c, 0x0a, 0x10, 0x41, 0x73, 0x73, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65,
+	0x70, 0x6c, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x32, 0x7c, 0x0a,
+	0x0d, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x2f,
+	0x0a, 0x0b, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x12, 0x0b, 0x2e,
+	0x6d, 0x73, 0x67, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x1a, 0x11, 0x2e, 0x6d, 0x73, 0x67,
+	0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x12,
+	0x3a, 0x0a, 0x0b, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x10,
+	0x2e, 0x6d, 0x73, 0x67, 0x2e, 0x41, 0x73, 0x73, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64,
+	0x1a, 0x15, 0x2e, 0x6d, 0x73, 0x67, 0x2e, 0x41, 0x73, 0x73, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f,
+	0x61, 0x64, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x28, 0x01, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -185,19 +384,25 @@ func file_proto_msg_proto_rawDescGZIP() []byte {
 	return file_proto_msg_proto_rawDescData
 }
 
-var file_proto_msg_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_msg_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_msg_proto_goTypes = []interface{}{
-	(*Metric)(nil),       // 0: msg.Metric
-	(*MetricsReply)(nil), // 1: msg.MetricsReply
+	(*Metric)(nil),           // 0: msg.Metric
+	(*MetricsReply)(nil),     // 1: msg.MetricsReply
+	(*AssetUpload)(nil),      // 2: msg.AssetUpload
+	(*AssetInfo)(nil),        // 3: msg.AssetInfo
+	(*AssetUploadReply)(nil), // 4: msg.AssetUploadReply
 }
 var file_proto_msg_proto_depIdxs = []int32{
-	0, // 0: msg.MetricSerice.SendMetrics:input_type -> msg.Metric
-	1, // 1: msg.MetricSerice.SendMetrics:output_type -> msg.MetricsReply
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: msg.AssetUpload.info:type_name -> msg.AssetInfo
+	0, // 1: msg.MetricService.SendMetrics:input_type -> msg.Metric
+	2, // 2: msg.MetricService.UploadAsset:input_type -> msg.AssetUpload
+	1, // 3: msg.MetricService.SendMetrics:output_type -> msg.MetricsReply
+	4, // 4: msg.MetricService.UploadAsset:output_type -> msg.AssetUploadReply
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_proto_msg_proto_init() }
@@ -230,6 +435,46 @@ func file_proto_msg_proto_init() {
 				return nil
 			}
 		}
+		file_proto_msg_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AssetUpload); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_msg_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AssetInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_msg_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AssetUploadReply); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+	}
+	file_proto_msg_proto_msgTypes[2].OneofWrappers = []interface{}{
+		(*AssetUpload_Info)(nil),
+		(*AssetUpload_Content)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -237,7 +482,7 @@ func file_proto_msg_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_msg_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -259,74 +504,145 @@ var _ grpc.ClientConnInterface
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion6
 
-// MetricSericeClient is the client API for MetricSerice service.
+// MetricServiceClient is the client API for MetricService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MetricSericeClient interface {
+type MetricServiceClient interface {
 	SendMetrics(ctx context.Context, in *Metric, opts ...grpc.CallOption) (*MetricsReply, error)
+	UploadAsset(ctx context.Context, opts ...grpc.CallOption) (MetricService_UploadAssetClient, error)
 }
 
-type metricSericeClient struct {
+type metricServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewMetricSericeClient(cc grpc.ClientConnInterface) MetricSericeClient {
-	return &metricSericeClient{cc}
+func NewMetricServiceClient(cc grpc.ClientConnInterface) MetricServiceClient {
+	return &metricServiceClient{cc}
 }
 
-func (c *metricSericeClient) SendMetrics(ctx context.Context, in *Metric, opts ...grpc.CallOption) (*MetricsReply, error) {
+func (c *metricServiceClient) SendMetrics(ctx context.Context, in *Metric, opts ...grpc.CallOption) (*MetricsReply, error) {
 	out := new(MetricsReply)
-	err := c.cc.Invoke(ctx, "/msg.MetricSerice/SendMetrics", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/msg.MetricService/SendMetrics", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// MetricSericeServer is the server API for MetricSerice service.
-type MetricSericeServer interface {
+func (c *metricServiceClient) UploadAsset(ctx context.Context, opts ...grpc.CallOption) (MetricService_UploadAssetClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_MetricService_serviceDesc.Streams[0], "/msg.MetricService/UploadAsset", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &metricServiceUploadAssetClient{stream}
+	return x, nil
+}
+
+type MetricService_UploadAssetClient interface {
+	Send(*AssetUpload) error
+	CloseAndRecv() (*AssetUploadReply, error)
+	grpc.ClientStream
+}
+
+type metricServiceUploadAssetClient struct {
+	grpc.ClientStream
+}
+
+func (x *metricServiceUploadAssetClient) Send(m *AssetUpload) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *metricServiceUploadAssetClient) CloseAndRecv() (*AssetUploadReply, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(AssetUploadReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// MetricServiceServer is the server API for MetricService service.
+type MetricServiceServer interface {
 	SendMetrics(context.Context, *Metric) (*MetricsReply, error)
+	UploadAsset(MetricService_UploadAssetServer) error
 }
 
-// UnimplementedMetricSericeServer can be embedded to have forward compatible implementations.
-type UnimplementedMetricSericeServer struct {
+// UnimplementedMetricServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedMetricServiceServer struct {
 }
 
-func (*UnimplementedMetricSericeServer) SendMetrics(context.Context, *Metric) (*MetricsReply, error) {
+func (*UnimplementedMetricServiceServer) SendMetrics(context.Context, *Metric) (*MetricsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMetrics not implemented")
 }
-
-func RegisterMetricSericeServer(s *grpc.Server, srv MetricSericeServer) {
-	s.RegisterService(&_MetricSerice_serviceDesc, srv)
+func (*UnimplementedMetricServiceServer) UploadAsset(MetricService_UploadAssetServer) error {
+	return status.Errorf(codes.Unimplemented, "method UploadAsset not implemented")
 }
 
-func _MetricSerice_SendMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func RegisterMetricServiceServer(s *grpc.Server, srv MetricServiceServer) {
+	s.RegisterService(&_MetricService_serviceDesc, srv)
+}
+
+func _MetricService_SendMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Metric)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MetricSericeServer).SendMetrics(ctx, in)
+		return srv.(MetricServiceServer).SendMetrics(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/msg.MetricSerice/SendMetrics",
+		FullMethod: "/msg.MetricService/SendMetrics",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MetricSericeServer).SendMetrics(ctx, req.(*Metric))
+		return srv.(MetricServiceServer).SendMetrics(ctx, req.(*Metric))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _MetricSerice_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "msg.MetricSerice",
-	HandlerType: (*MetricSericeServer)(nil),
+func _MetricService_UploadAsset_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(MetricServiceServer).UploadAsset(&metricServiceUploadAssetServer{stream})
+}
+
+type MetricService_UploadAssetServer interface {
+	SendAndClose(*AssetUploadReply) error
+	Recv() (*AssetUpload, error)
+	grpc.ServerStream
+}
+
+type metricServiceUploadAssetServer struct {
+	grpc.ServerStream
+}
+
+func (x *metricServiceUploadAssetServer) SendAndClose(m *AssetUploadReply) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *metricServiceUploadAssetServer) Recv() (*AssetUpload, error) {
+	m := new(AssetUpload)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+var _MetricService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "msg.MetricService",
+	HandlerType: (*MetricServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SendMetrics",
-			Handler:    _MetricSerice_SendMetrics_Handler,
+			Handler:    _MetricService_SendMetrics_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "UploadAsset",
+			Handler:       _MetricService_UploadAsset_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto/msg.proto",
 }

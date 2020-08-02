@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"context"
+	"io"
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 
 	pb "github.com/LemurPwned/goman/proto"
@@ -22,10 +26,8 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewMetricSericeClient(conn)
-
+	c := pb.NewMetricServiceClient(conn)
 	// Contact the server and print out its response.
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -37,4 +39,68 @@ func main() {
 		log.Fatalf("could not greet: %v", err)
 	}
 	log.Printf("Greeting: %s", r.GetMessage())
+
+	sendAsset("./client.go", c)
+}
+
+func sendAsset(fn string, client pb.MetricServiceClient) {
+	fo, err := os.Open(fn)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer fo.Close()
+
+	ctx := context.Background()
+	stream, err := client.UploadAsset(ctx)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer stream.CloseSend()
+
+	stat, err := fo.Stat()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Size is %d", stat.Size())
+	req := &pb.AssetUpload{
+		Data: &pb.AssetUpload_Info{
+			Info: &pb.AssetInfo{
+				AssetName: "test",
+				AssetType: filepath.Ext(fn),
+			},
+		},
+	}
+	err = stream.Send(req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	maxBufferSize := 1024
+	buffer := make([]byte, maxBufferSize)
+	reader := bufio.NewReader(fo)
+	for {
+		n, err := reader.Read(buffer)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to read: %s\n", err)
+		}
+
+		req := &pb.AssetUpload{
+			Data: &pb.AssetUpload_Content{
+				Content: buffer[:n],
+			},
+		}
+		err = stream.Send(req)
+		if err != nil {
+			log.Fatalf("Failed to send: %s\n", err)
+		}
+	}
+	res, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("Failed to close and receive reply %s\n", err)
+	}
+	log.Printf("Res: %s", res.GetMessage())
+	log.Println("File uploaded!")
 }

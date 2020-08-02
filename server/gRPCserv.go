@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	pb "github.com/LemurPwned/goman/proto"
@@ -24,7 +26,7 @@ func initServer() {
 	}
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterMetricSericeServer(grpcServer, &Server{})
+	pb.RegisterMetricServiceServer(grpcServer, &Server{})
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
@@ -51,4 +53,29 @@ func (s *Server) SendMetrics(ctx context.Context, in *pb.Metric) (*pb.MetricsRep
 		return nil, err
 	}
 	return &pb.MetricsReply{Message: "hello from the serve"}, nil
+}
+
+func (s *Server) UploadAsset(stream pb.MetricService_UploadAssetServer) error {
+	log.Println("Starting serving the asset upload!")
+	fo, err := os.Create("./output.txt")
+	if err != nil {
+		return err
+	}
+	defer fo.Close()
+
+	var ass *pb.AssetUpload
+	for {
+		ass, err = stream.Recv()
+		if err == io.EOF {
+			// end of file
+			err = stream.SendAndClose(&pb.AssetUploadReply{
+				Message: "File uploaded successfully!",
+			})
+			log.Println("Finished reading the file!")
+			return nil
+		}
+		if _, err := fo.Write(ass.GetContent()); err != nil {
+			return err
+		}
+	}
 }

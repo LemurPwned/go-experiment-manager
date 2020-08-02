@@ -80,6 +80,8 @@ func addExperimentToMongo(ex Experiment) error {
 	// db := client.Database("experiments")
 	collection := mainDB.Collection("new-experiment")
 	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	_, err := collection.InsertOne(ctx, ex)
 	return err
 }

@@ -4,8 +4,9 @@ package msg;
 import "google/protobuf/timestamp.proto";
 
 
-service MetricSerice {
+service MetricService {
     rpc SendMetrics(Metric) returns (MetricsReply) {}
+    rpc UploadAsset(stream AssetUpload) returns (AssetUploadReply) {}
 }
 
 
@@ -19,4 +20,20 @@ message Metric {
 message MetricsReply {
     int32 statusCode = 1;
     string message = 2;
+}
+
+message AssetUpload {
+    oneof data {
+        AssetInfo info = 1;
+        bytes content = 2;
+    }
+}
+
+message AssetInfo {
+    string AssetName = 1 ;
+    string AssetType = 2;
+}
+
+message AssetUploadReply {
+    string message = 1;
 }
