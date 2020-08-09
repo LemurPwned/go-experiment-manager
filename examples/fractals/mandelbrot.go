@@ -35,6 +35,12 @@ type point struct {
 	y float64
 }
 
+type cell struct {
+	x        int
+	y        int
+	drawable uint32
+}
+
 func (p *point) abs() float64 {
 
 	return math.Sqrt(p.x*p.x + p.y*p.y)
@@ -98,8 +104,4 @@ func mandelbrotPixel(maxIter int, c point) float64 {
 		n++
 	}
 	return float64(n) - (math.Log10(math.Log10(modulus)) / math.Log10(2))
-}
-
-func main() {
-	generateFractalImg("test")
 }

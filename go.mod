@@ -3,13 +3,15 @@ module github.com/LemurPwned/goman
 go 1.14
 
 require (
+	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7
+	github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1
+	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200707082815-5321531c36a2
 	github.com/golang/protobuf v1.4.2
 	github.com/google/go-cmp v0.5.1 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/spf13/afero v1.3.2 // indirect
 	github.com/spf13/viper v1.7.1
-	github.com/sqs/goreturns v0.0.0-20181028201513-538ac6014518 // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
 	go.mongodb.org/mongo-driver v1.4.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
