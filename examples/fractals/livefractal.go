@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
+	"github.com/nullboundary/glfont"
 )
 
 const (
@@ -96,19 +97,7 @@ void main()
 // 0.6,  0.34, 0.0,
 // 0.41, 0.2,  0.0
 
-var vboArray [width * height * 3]uint8
-
 var (
-	square = []float32{
-		-0.5, 0.5, 0,
-		-0.5, -0.5, 0,
-		0.5, -0.5, 0,
-
-		-0.5, 0.5, 0,
-		0.5, 0.5, 0,
-		0.5, -0.5, 0,
-	}
-
 	rect = []float32{
 		-1.0, -1.0, 0.0,
 		1.0, -1.0, 0.0,
@@ -118,6 +107,19 @@ var (
 		-1.0, -1.0, 0.0,
 	}
 )
+
+type UserInput struct {
+	fps    float64
+	mouseX float64
+	mouseY float64
+}
+
+type mandelbrot struct {
+	scale   float32
+	x       float32
+	y       float32
+	maxIter uint32
+}
 
 func createRectangleBuffer() uint32 {
 
@@ -142,13 +144,6 @@ func createVAO(rectangleBuff uint32) uint32 {
 	return vao
 }
 
-type mandelbrot struct {
-	scale   float32
-	x       float32
-	y       float32
-	maxIter uint32
-}
-
 func main() {
 	runtime.LockOSThread()
 
@@ -163,6 +158,15 @@ func main() {
 		maxIter: 30,
 	}
 	var name int32
+
+	ux := UserInput{}
+
+	font, err := glfont.LoadFont("Roboto-Light.ttf", int32(52), width, height)
+	font.SetColor(1.0, 0.0, 0.0, 1.0)
+	if err != nil {
+		log.Panicf("LoadFont: %v", err)
+	}
+
 	for !window.ShouldClose() {
 		gl.UseProgram(prog)
 
@@ -206,6 +210,8 @@ func main() {
 		gl.DrawArrays(gl.TRIANGLES, 0, 6)
 		gl.BindVertexArray(0)
 
+		ux.mouseX, ux.mouseY = window.GetCursorPos()
+		font.Printf(0, 0, 1.0, "Cursor: %f, %f", ux.mouseX, ux.mouseY)
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
