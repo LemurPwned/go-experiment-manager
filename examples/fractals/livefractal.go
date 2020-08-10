@@ -3,17 +3,22 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"runtime"
 	"strings"
 
+	"github.com/4ydx/gltext"
+	v41 "github.com/4ydx/gltext/v4.1"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
-	"github.com/nullboundary/glfont"
+	"github.com/go-gl/mathgl/mgl32"
+	"golang.org/x/image/math/fixed"
 )
 
+var width int = 600
+var height int = 600
+
 const (
-	width              = 600
-	height             = 600
 	vertexShaderSource = `#version 410 core
 
 	in vec3 vertex_position;
@@ -144,6 +149,8 @@ func createVAO(rectangleBuff uint32) uint32 {
 	return vao
 }
 
+var useStrictCoreProfile = (runtime.GOOS == "darwin")
+
 func main() {
 	runtime.LockOSThread()
 
@@ -153,50 +160,103 @@ func main() {
 
 	mandelData := mandelbrot{
 		scale:   1.0,
-		x:       0.0,
-		y:       0.0,
-		maxIter: 30,
+		x:       1.0,
+		y:       1.0,
+		maxIter: 100,
 	}
 	var name int32
 
 	ux := UserInput{}
+	glfw.SwapInterval(1)
+	var font *v41.Font
+	config, err := gltext.LoadTruetypeFontConfig(".", "TNR")
+	if err == nil {
+		font, err = v41.NewFont(config)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Font loaded from disk...")
+	} else {
+		fd, err := os.Open("./TNR.ttf")
+		if err != nil {
+			panic(err)
+		}
+		defer fd.Close()
 
-	font, err := glfont.LoadFont("Roboto-Light.ttf", int32(52), width, height)
-	font.SetColor(1.0, 0.0, 0.0, 1.0)
-	if err != nil {
-		log.Panicf("LoadFont: %v", err)
+		runeRanges := make(gltext.RuneRanges, 0)
+		runeRanges = append(runeRanges, gltext.RuneRange{Low: 32, High: 128})
+
+		scale := fixed.Int26_6(32)
+		runesPerRow := fixed.Int26_6(128)
+		config, err = gltext.NewTruetypeFontConfig(fd, scale, runeRanges, runesPerRow, 5)
+		if err != nil {
+			panic(err)
+		}
+		err = config.Save(".", "TNR")
+		if err != nil {
+			panic(err)
+		}
+		font, err = v41.NewFont(config)
+		if err != nil {
+			panic(err)
+		}
 	}
+
+	font.ResizeWindow(float32(width), float32(height))
+	textMouse := v41.NewText(font, 1.0, 1.1)
+	textMouse.SetColor(mgl32.Vec3{1, 1, 1})
+
+	textScale := v41.NewText(font, 1.0, 1.1)
+	textScale.SetColor(mgl32.Vec3{1, 1, 1})
+
+	scrollAccm := 0.0
+	window.SetScrollCallback(func(w *glfw.Window, xoff float64, yoff float64) {
+		// log.Printf("Scroll (%.2f, %.2f)\n", xoff, yoff)
+		scrollAccm += yoff
+		mandelData.scale += 0.1 * float32(yoff) * mandelData.scale
+		mandelData.x = float32(ux.mouseX) / float32(width)
+		mandelData.y = float32(ux.mouseY) / float32(height)
+
+	})
+	window.SetMouseButtonCallback(func(w *glfw.Window, button glfw.MouseButton,
+		action glfw.Action, mod glfw.ModifierKey) {
+		// if button == glfw.MouseButtonLeft {
+		// 	ux.mouseX, ux.mouseY = window.GetCursorPos()
+		// 	mandelData.x = (float32(ux.mouseX) / float32(width))
+		// 	mandelData.y = float32(ux.mouseY) / float32(height)
+		// }
+	})
 
 	for !window.ShouldClose() {
 		gl.UseProgram(prog)
 
-		gl.Clear(gl.COLOR_BUFFER_BIT)
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		name = gl.GetUniformLocation(prog, gl.Str("rect_width\x00"))
 		if name < 0 {
 			log.Fatalln("Could not find name")
 		}
-		gl.Uniform1f(name, width)
+		gl.Uniform1f(name, float32(width))
 
 		name = gl.GetUniformLocation(prog, gl.Str("rect_height\x00"))
 		if name < 0 {
 			log.Fatalln("Could not find name")
 		}
-		gl.Uniform1f(name, height)
+		gl.Uniform1f(name, float32(height))
 
 		name = gl.GetUniformLocation(prog, gl.Str("area_w\x00"))
 		if name < 0 {
 			log.Fatalln("Could not find name")
 		}
-		gl.Uniform2f(name, -2.0*mandelData.scale+mandelData.x,
-			mandelData.scale+mandelData.x)
+		gl.Uniform2f(name, -mandelData.scale*mandelData.x,
+			mandelData.scale*mandelData.x)
 
 		name = gl.GetUniformLocation(prog, gl.Str("area_h\x00"))
 		if name < 0 {
 			log.Fatalln("Could not find name")
 		}
-		gl.Uniform2f(name, -1*mandelData.scale+mandelData.y,
-			mandelData.scale+mandelData.y)
+		gl.Uniform2f(name, -mandelData.scale*mandelData.y,
+			mandelData.scale*mandelData.y)
 
 		name = gl.GetUniformLocation(prog, gl.Str("max_iterations\x00"))
 		if name < 0 {
@@ -211,10 +271,35 @@ func main() {
 		gl.BindVertexArray(0)
 
 		ux.mouseX, ux.mouseY = window.GetCursorPos()
-		font.Printf(0, 0, 1.0, "Cursor: %f, %f", ux.mouseX, ux.mouseY)
+
+		qstate := window.GetKey(glfw.KeyQ)
+		if qstate == glfw.Press {
+			log.Println("Q press detected, quitting!")
+			break
+		}
+
+		if window.GetKey(glfw.KeyR) == glfw.Press {
+			mandelData.x = 1
+			mandelData.y = 1
+			mandelData.scale = 1.0
+		}
+
+		width, height = window.GetSize()
+
+		textMouse.SetPosition(mgl32.Vec2{-100, 250})
+		textScale.SetPosition(mgl32.Vec2{-100, 200})
+		textMouse.SetString("MousePos: (%.2f, %.2f)",
+			ux.mouseX, ux.mouseY)
+		textScale.SetString("X, Y (%.2f, %.2f)", mandelData.x, mandelData.y)
+		textMouse.Draw()
+		textScale.Draw()
+
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
+	textMouse.Release()
+	textScale.Release()
+	font.Release()
 }
 
 // initGlfw initializes glfw and returns a Window to use.
@@ -222,18 +307,19 @@ func initGlfw() *glfw.Window {
 	if err := glfw.Init(); err != nil {
 		panic(err)
 	}
-	glfw.WindowHint(glfw.Resizable, glfw.False)
+	glfw.WindowHint(glfw.Resizable, glfw.True)
 	glfw.WindowHint(glfw.ContextVersionMajor, 4)
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
-	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+	if useStrictCoreProfile {
+		glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+		glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+	}
 
 	window, err := glfw.CreateWindow(width, height, "Fractals", nil, nil)
 	if err != nil {
 		panic(err)
 	}
 	window.MakeContextCurrent()
-
 	return window
 }
 
