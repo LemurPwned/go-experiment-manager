@@ -12,6 +12,7 @@ import (
 
 func main() {
 	clusterWolff("sim", true)
+	// localMetripolis("sim", true)
 }
 
 func makeImage(spinMap []int, L int, name string) {
@@ -63,21 +64,65 @@ var (
 
 func calcEnergy(spinMap []int, neighbourMap map[int][]int) float64 {
 	E0 := 0.0
+
 	for spinIdx := range spinMap {
 		subE := 0
-		for spinNIdx := range neighbourMap[spinIdx] {
-			subE += spinMap[spinNIdx]
+		for _, nn := range neighbourMap[spinIdx] {
+			subE += spinMap[nn]
 		}
-		E0 += float64(spinMap[spinIdx] * subE)
+		E0 -= float64(spinMap[spinIdx] * subE)
 	}
-	return -0.5 * E0
+	return 0.5 * E0
+}
+
+func localMetripolis(folder string, saveImg bool) {
+	L := 6
+	N := L * L
+	T := 2.0
+	beta := 1.0 / T
+	maxSteps := 100000
+
+	// construct neighbour list
+	neighbourMap := make(map[int][]int)
+	spinMap := make([]int, N, N)
+	for i := 0; i < N; i++ {
+		neighbourMap[i] = []int{
+			(i/L)*L + (i+1)%L,
+			(i + L) % N,
+			(i/L)*L + ((i-1)%L+L)%L,
+			((i-L)%N + N) % N,
+		}
+		// fill the spin
+		spinMap[i] = 2*rand.Intn(2) - 1 // 1 or -1
+	}
+	Etot := calcEnergy(spinMap, neighbourMap)
+	energies := make([]float64, 0, maxSteps)
+	for step := 0; step < maxSteps; step++ {
+		k := rand.Intn(N)
+		deltaE := 0.0
+		for _, spinNIdx := range neighbourMap[k] {
+			deltaE += float64(spinMap[spinNIdx])
+		}
+		deltaE *= 2.0 * float64(spinMap[k])
+		if rand.Float64() < math.Exp(-beta*deltaE) {
+			spinMap[k] *= -1
+			Etot += deltaE
+		}
+		energies = append(energies, Etot)
+	}
+	energySum := 0.0
+	for _, val := range energies {
+		energySum += val
+	}
+	fmt.Printf("Mean energy %f per spin", energySum/float64(maxSteps*N))
+
 }
 
 func clusterWolff(folder string, saveImg bool) {
-	maxSteps := 350
+	maxSteps := 10000
 	L := 100
 	N := L * L
-	T := 2.5
+	T := 2.0
 	p := 1.0 - math.Exp(-2.0/T)
 
 	// construct neighbour list
@@ -87,34 +132,36 @@ func clusterWolff(folder string, saveImg bool) {
 		neighbourMap[i] = []int{
 			(i/L)*L + (i+1)%L,
 			(i + L) % N,
-			(i - L) % N,
-			(i/L)*L + (i-1)%L,
+			(i/L)*L + ((i-1)%L+L)%L,
+			((i-L)%N + N) % N,
 		}
 		// fill the spin
 		spinMap[i] = 2*rand.Intn(2) - 1 // 1 or -1
-
 	}
 
-	pocket := make([]int, 0)
 	E := calcEnergy(spinMap, neighbourMap)
+	energies := make([]float64, 0, maxSteps+1)
+	energies = append(energies, E)
 	fmt.Printf("Step: %d, Energy: %.3f\n", 0, E)
 	for step := 1; step < maxSteps; step++ {
 		// take a random spin
 		k := rand.Intn(N)
-		pocket = pocket[:0]
+		pocket := make([]int, 0, N)
 		cluster := make(map[int]int)
 
 		pocket = append(pocket, k)
 		cluster[k] = k
 		// constructing the large cluster
 		for {
+
 			if len(pocket) == 0 {
 				break
 			}
 			j := pocket[rand.Intn(len(pocket))]
-			for l := range neighbourMap[j] {
+			// log.Println(pocket, j, cluster, neighbourMap[j])
+			for _, l := range neighbourMap[j] {
 				_, ok := cluster[l]
-				if ok && (spinMap[l] == spinMap[j]) && (rand.Float64() < p) {
+				if !ok && (spinMap[l] == spinMap[j]) && (rand.Float64() < p) {
 					pocket = append(pocket, l)
 					cluster[l] = l
 				}
@@ -129,9 +176,22 @@ func clusterWolff(folder string, saveImg bool) {
 			makeImage(spinMap, L, fmt.Sprintf("%s/Iteration_%d", folder, step))
 		}
 		E := calcEnergy(spinMap, neighbourMap)
-		fmt.Printf("Step: %d, Energy: %.3f\n", step, E)
+		energies = append(energies, E)
+		if step%1 == 0 {
+			// fmt.Printf("Step: %d, Energy: %.3f\n", step, E)
+		}
 	}
 
+	meanEnergy := 0.0
+	meanEnergy2 := 0.0
+	for _, eng := range energies {
+		meanEnergy += eng
+		meanEnergy2 += (eng * eng)
+	}
+	meanEnergy = meanEnergy / float64(maxSteps)
+	meanEnergy2 = meanEnergy2 / float64(maxSteps)
+	specificHeat := (meanEnergy2 - math.Pow(meanEnergy, 2)) / float64(N) / (math.Pow(T, 2))
+	fmt.Printf("Mean energy: %.4f\nSpecific Heat: %.4f\nEnergy per spin %.4f\n", meanEnergy, specificHeat, meanEnergy/float64(N))
 }
 
 func removeVal(s []int, val int) []int {
