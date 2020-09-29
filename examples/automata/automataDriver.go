@@ -128,7 +128,7 @@ func makeImage(ruleMap [][]string, N, rowSize int, name string) {
 	png.Encode(f, img)
 }
 
-func randomRuns(rowNumber, initNums int) [][]int {
+func randomRuns(rowNumber, initNums int, bias float64) [][]int {
 
 	inits := make([][]int, initNums)
 
@@ -136,7 +136,7 @@ func randomRuns(rowNumber, initNums int) [][]int {
 		inits[i] = make([]int, rowNumber)
 		for j := 0; j < rowNumber; j++ {
 			n := 0
-			if rand.Float64() > 0.5 {
+			if rand.Float64() > bias {
 				n = 1
 			}
 			inits[i][j] = n
@@ -150,9 +150,10 @@ func simulateIntensity() {
 	runs := 1000
 	rows := 100
 	generations := 60
-	inits := randomRuns(rows, runs)
+	bias := 0.0005
+	inits := randomRuns(rows, runs, bias)
 
-	rule := 42
+	rule := 30
 	a := AutomataDriver{
 		r:        generateRule(rule),
 		ruleSize: 3,
