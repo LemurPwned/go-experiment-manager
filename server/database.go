@@ -47,14 +47,14 @@ func deleteExperiment(experiments *ExperimentSlice, experimentID string) error {
 }
 
 func connectMongo() {
-	cred := options.Credential{
-		Username: "root",
-		Password: "password123",
-	}
+	// cred := options.Credential{
+	// 	Username: "root",
+	// 	Password: "test",
+	// }
 	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	ctx := context.Background()
 	// defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017").SetAuth(cred))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		log.Panicln(err)
 	}
